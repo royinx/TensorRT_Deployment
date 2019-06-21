@@ -17,10 +17,10 @@ model.to(device)
 dummy_input = Variable(torch.randn(batch_size, *input_shape, device='cuda'))  # (batch , ch , h , w)    N,C,H,W
 print('****')
 
-output = torch.onnx.export(model,
-								dummy_input,
-								model_onnx_path,
-								verbose=True)
+output = torch.onnx.export(	model,
+							dummy_input,
+							model_onnx_path,
+							verbose=True)
 
 print("Export of torch_model.onnx complete")
 
