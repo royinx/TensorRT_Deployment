@@ -1,6 +1,6 @@
 import torch 
 from torch.autograd import Variable
-import torchvision
+import models
 
 # Config
 input_shape = (3,224,224)
@@ -9,8 +9,8 @@ model_onnx_path = 'torch_model.onnx'
 
 # Load the model
 device = torch.device("cuda")
-model = torchvision.models.resnext101_32x8d(pretrained = False,progress = True)
-model.load_state_dict(torch.load('models/models/age_model.pt',map_location=device),strict = False)
+model = models.resnet.resnext101_32x8d(pretrained = False,progress = True)
+model.load_state_dict(torch.load('weights/weights/age_model.pt',map_location=device),strict = False)
 model.to(device)
 
 # Export the model to an ONNX file
