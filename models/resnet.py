@@ -200,7 +200,8 @@ class ResNet(nn.Module):
         x = self.layer4(x)
 
         x = self.avgpool(x)
-        x = x.reshape(int(x.size(0)), -1)
+        # x = x.reshape(x.size(0), -1)
+        x = x.flatten(1)
         x = self.fc(x)
 
         return x
