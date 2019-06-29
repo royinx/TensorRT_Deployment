@@ -3,3 +3,4 @@
 *.pth
 *.h5
 *.trt
+*.weights
