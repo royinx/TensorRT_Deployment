@@ -4,3 +4,4 @@
 *.h5
 *.trt
 *.weights
+*.pyc
