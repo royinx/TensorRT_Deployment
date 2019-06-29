@@ -10,7 +10,7 @@ Accuracy:		79.x / 76.x				80
 import numpy as np
 from argparse import ArgumentParser
 import os 
-import common
+from utils import common
 
 
 class CFG(object):

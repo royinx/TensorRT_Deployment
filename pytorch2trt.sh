@@ -1,2 +1,0 @@
-. pytorch2ONNX.py
-

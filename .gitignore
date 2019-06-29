@@ -5,3 +5,5 @@
 *.trt
 *.weights
 *.pyc
+*.jpy
+*.npy
