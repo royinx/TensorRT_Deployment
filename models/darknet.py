@@ -1,13 +1,13 @@
 import os
-
 import torch.nn.functional as F
 
 from yolov3.utils.parse_config import *
 from yolov3.utils.utils import *
+import argparse
+
+
 
 ONNX_EXPORT = False
-
-
 def create_modules(module_defs):
     """
     Constructs module list of layer blocks from module configuration in module_defs
@@ -15,6 +15,7 @@ def create_modules(module_defs):
     hyperparams = module_defs.pop(0)
     output_filters = [int(hyperparams['channels'])]
     module_list = nn.ModuleList()
+    yolo_layer_count = 0
 
     for i, module_def in enumerate(module_defs):
         modules = nn.Sequential()
@@ -66,8 +67,9 @@ def create_modules(module_defs):
             nc = int(module_def['classes'])  # number of classes
             img_size = hyperparams['height']
             # Define detection layer
-            yolo_layer = YOLOLayer(anchors, nc, img_size, cfg=hyperparams['cfg'])
+            yolo_layer = YOLOLayer(anchors, nc, img_size,yolo_layer_count, cfg=hyperparams['cfg'])
             modules.add_module('yolo_%d' % i, yolo_layer)
+            yolo_layer_count += 1
 
         # Register module list and number of output filters
         module_list.append(modules)
@@ -99,7 +101,7 @@ class Upsample(nn.Module):
 
 
 class YOLOLayer(nn.Module):
-    def __init__(self, anchors, nc, img_size, cfg):
+    def __init__(self, anchors, nc, img_size, yolo_layer, cfg):
         super(YOLOLayer, self).__init__()
 
         self.anchors = torch.Tensor(anchors)
@@ -346,12 +348,22 @@ def save_weights(self, path='model.weights', cutoff=-1):
                 conv_layer.weight.data.cpu().numpy().tofile(f)
 
 
-def convert(cfg='cfg/yolov3-spp.cfg', weights='weights/yolov3-spp.weights'):
+def convert(cfg='cfg/yolov3-spp.cfg', weights='weights/yolov3-spp.weights', output=None):
     # Converts between PyTorch and Darknet format per extension (i.e. *.weights convert to *.pt and vice versa)
     # from models import *; convert('cfg/yolov3-spp.cfg', 'weights/yolov3-spp.weights')
 
     # Initialize model
     model = Darknet(cfg)
+
+    # naming 
+    if output and output.split('.')[-1] != weights.split('.')[-1]:
+        save_path = output
+    else:
+        if weights.endswith('.pt'):
+            save_path = 'converted.weights'
+        elif weights.endswith('.weights'):
+            save_path = 'converted_model.pt'
+
 
     # Load weights and save
     if weights.endswith('.pt'):  # if PyTorch format
@@ -362,20 +374,42 @@ def convert(cfg='cfg/yolov3-spp.cfg', weights='weights/yolov3-spp.weights'):
     elif weights.endswith('.weights'):  # darknet format
         _ = load_darknet_weights(model, weights)
         chkpt = {'epoch': -1, 'best_loss': None, 'model': model.state_dict(), 'optimizer': None}
-        torch.save(chkpt, 'converted_dict.pt')
-        print("Success: converted '%s' to 'converted_dict.pt'" % weights)
+        save_dict = '{}_dict.pt'.format(save_path.split('.pt')[0])
+        torch.save(chkpt, save_dict)
+        print("Success: converted '{}' to '{}'".format(weights,save_dict))
         print()
-        model.load_state_dict(torch.load('converted_dict.pt', map_location='cpu')['model'])
-        torch.save(model, 'converted_model.pt')
-        print("Success: converted '%s' to 'converted_model.pt'" % weights)
-
+        model.load_state_dict(torch.load(save_dict, map_location='cpu')['model'])
+        torch.save(model, save_path)
+        print("Success: converted '{}' to '{}'".format(weights,save_path))
+        print()
     else:
         print('Error: extension not supported.')
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="convert weight between darknet(yolo), pytorch nad ONNX")
+    parser.add_argument('--onnx', action='store_true', help='onnx version')
+    parser.add_argument('--cfg',type = str)
+    parser.add_argument('--input',type = str)
+    parser.add_argument('--output',type = str)
+    args = parser.parse_args()
+    return args
+
+if __name__ == '__main__':
+    args = parse_args()
+    ONNX_EXPORT = args.onnx
+    if args.cfg and args.input and args.output:
+        convert(args.cfg,args.input, args.output)
+    else:
+        print('Missing CFG/ Input/ Output path')
+
+
+
+
 # convert darknet cfg/weights to pytorch model
-# py -c "from models import *; convert('cfg/yolov3-spp.cfg', 'weights/yolov3-spp.weights')"
+# py models.py --onnx --cfg cfg/yolov3-spp.cfg --input weights/yolov3-spp.weights --output weights/yolov3-ssp.pt
 
 # convert cfg/pytorch model to darknet weights
-# py -c "from models import *; convert('cfg/yolov3-spp.cfg', 'weights/yolov3-spp.pt')"
-# py -c "from models import *; convert('cfg/yolov3-spp.cfg', 'converted_dict.pt')"
+# py models.py --cfg cfg/yolov3-spp.cfg --input weights/yolov3-spp.weights --output weights/yolov3-ssp.pt
+# py models.py --onnx --cfg cfg/yolov3-spp.cfg --input weights/yolov3-spp.pt --output weights/yolov3-ssp.weights
+ 

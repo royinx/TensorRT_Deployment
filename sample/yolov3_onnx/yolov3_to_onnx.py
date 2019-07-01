@@ -754,10 +754,15 @@ def download_file(local_path, link, checksum_reference=None):
 def main():
     """Run the DarkNet-to-ONNX conversion for YOLOv3-608."""
     # Have to use python 2 due to hashlib compatibility
-    if sys.version_info[0] > 2:
-        raise Exception("This script is only compatible with python2, please re-run this script with python2. The rest of this sample can be run with either version of python.")
+    # if sys.version_info[0] > 2:
+        # raise Exception("This script is only compatible with python2, please re-run this script with python2. The rest of this sample can be run with either version of python.")
 
     # Download the config for YOLOv3 if not present yet, and analyze the checksum:
+    # cfg_file_path = 'yolov3-ssp.cfg'
+    # cfg_file_path = download_file(
+    #     'yolov3-ssp.cfg',
+    #     'https://raw.githubusercontent.com/pjreddie/darknet/master/cfg/yolov3-spp.cfg')
+
     cfg_file_path = download_file(
         'yolov3.cfg',
         'https://raw.githubusercontent.com/pjreddie/darknet/f86901f6177dfc6116360a13cc06ab680e0c86b0/cfg/yolov3.cfg',
@@ -787,6 +792,11 @@ def main():
 
     # We want to populate our network with weights later, that's why we download those from
     # the official mirror (and verify the checksum):
+    # weights_file_path = 'yolov3-ssp.weights'
+    # weights_file_path = download_file(
+    #     'yolov3-ssp.weights',
+    #     'https://pjreddie.com/media/files/yolov3-spp.weights')
+
     weights_file_path = download_file(
         'yolov3.weights',
         'https://pjreddie.com/media/files/yolov3.weights',

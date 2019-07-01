@@ -1,4 +1,5 @@
 import torch 
+from models import *
 from torch.autograd import Variable
 import argparse
 import sys
@@ -58,5 +59,5 @@ py convert_ONNX_fullmodel.py 	--cuda 6 \
 								--input transform/framework_weight/yolov3.pt \
 								--output transform/onnx/yolov3.pt
 '''
-# py convert_framework2ONNX.py 	--cuda 0 --batch_size 1024 --input transform/framework_weight/yolov3.pt --output transform/onnx/yolov3.onnx
+# py convert_framework2ONNX.py 	--cuda 0 --batch_size 64 --input transform/framework_weight/yolov3-ssp.pt --output transform/onnx/yolov3-ssp.onnx
 # py convert_framework2ONNX.py 	--cuda 0 --batch_size 32 --input transform/framework_weight/age_full_model.pt --output transform/onnx/age_full_model.onnx
