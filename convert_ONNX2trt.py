@@ -261,5 +261,5 @@ if __name__ == '__main__':
 	main()
 
 
-# py ONNX2trt.py --precision fp16 --build --batch 16 --model gender_model.onnx --model_memory 2 --model_max_batch_size 512
-# py ONNX2trt.py --precision fp16 --batch 16 --model gender_model.onnx --model_memory 2 --model_max_batch_size 512
+# py convert_ONNX2trt.py --precision fp16 --build --batch 16 --model gender_model.onnx --model_memory 2 --model_max_batch_size 512
+# py convert_ONNX2trt.py --precision fp16 --batch 16 --model gender_model.onnx --model_memory 2 --model_max_batch_size 512
