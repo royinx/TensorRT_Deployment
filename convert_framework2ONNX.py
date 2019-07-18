@@ -34,6 +34,7 @@ def torch_to_ONNX(cfg:CFG):
 	model = torch.load(cfg.input_path)
 	print(type(model))
 	model.to(cfg.device)
+	print('================ Device: {} ================'.format(cfg.device))
 
 	model.eval()
 	dummy_input = Variable(torch.randn(cfg.batch_size, *cfg.input_shape, device=cfg.device))  # (batch , ch , h , w)    N,C,H,W
@@ -42,7 +43,7 @@ def torch_to_ONNX(cfg:CFG):
 								dummy_input,
 								cfg.output_path,
 								output_names = ['output_classes'],
-								verbose=True)
+								verbose=True)#.cpu()
 	print("Export of {} complete".format(cfg.output_path))
 
 
@@ -59,5 +60,5 @@ py convert_ONNX_fullmodel.py 	--cuda 6 \
 								--input transform/framework_weight/yolov3.pt \
 								--output transform/onnx/yolov3.pt
 '''
-# py convert_framework2ONNX.py 	--cuda 0 --batch_size 64 --input transform/framework_weight/yolov3-ssp.pt --output transform/onnx/yolov3-ssp.onnx
-# py convert_framework2ONNX.py 	--cuda 0 --batch_size 32 --input transform/framework_weight/age_full_model.pt --output transform/onnx/age_full_model.onnx
+# py convert_framework2ONNX.py 	--cuda 0 --batch_size 32 --input transform/framework_weight/yolov3-ssp.pt --output transform/onnx/yolov3-ssp.onnx
+# py convert_framework2ONNX.py 	--cuda 0 --batch_size 1 --input transform/framework_weight/age_full_model.pt --output transform/onnx/age_full_model.onnx
