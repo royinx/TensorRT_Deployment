@@ -8,3 +8,4 @@
 *.jpy
 *.npy
 __pycache__/
+*.pyc
