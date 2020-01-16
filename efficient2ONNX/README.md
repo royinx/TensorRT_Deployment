@@ -1,9 +1,9 @@
 ## Environment 
 
-torch - 1.3.0.dev20190910
-torchvision - 0.5.0a0+6ddda3a
-efficientnet_pytorch - 0.5.1
-onnx - 1.5.0
+> torch - 1.3.0.dev20190910
+> torchvision - 0.5.0a0+6ddda3a
+> efficientnet_pytorch - 0.5.1
+> onnx - 1.5.0
 
 #### Steps
 
